@@ -164,35 +164,3 @@ length.names.selection.logical <- function(x) {
 length.names.selection.numeric <- function(x) {
   length( as.numeric( x ) )
 }
-
-split.names <- function(split, discard=0, subset = filter.names()) {
-
-  # We want to make the split work, both if we are given
-  # a name, as well as when we are given a character
-  split.q <- rlang::enquo( split )
-
-  if( 0 > discard | discard >= 1 ) {
-    stop( "Cannot discard ", discard*100, "% of data" )
-  }
-
-  # Cutoff values for both groups
-  # Centered around the median, with ambigous elements removed
-  trgt.high <- 0.5 + discard/2
-  trgt.low  <- 0.5 - discard/2
-
-  g1 <- filter.names( (!!split.q) > trgt.high )
-  g2 <- filter.names( (!!split.q) < trgt.high )
-
-  rv <- list(g1 = g1 & subset, g2 = g2 & subset)
-  class(rv) <- "names.split"
-  rv
-}
-
-`[.names.split` <- function(x, i, j, ...) {
-  # No second index, just get the corresponding group
-  if( missing(j) ) {
-    return( x[[i]] )
-  }
-
-  x[[i]][ j ]
-}
