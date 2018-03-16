@@ -7,7 +7,7 @@ Authors@R: c(
   person("Jekel", "Marc", email = "marc.jekel@fernuni-hagen.de", role = c("aut")),
   person("Andreas", "Glöckner", email = "andreas.gloeckner@fernuni-hagen.de", role = c("aut","ths")))
 Description: This package provides simple access to a set of German names with associated ratings. Names can be selected based on various criteria to find a set of names suitable for a psychological experiment.
-Depends: R (>= 3.3.2)
+Depends: R (>= 3.3.2), rlang (>= 0.1.2)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
