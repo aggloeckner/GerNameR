@@ -1,0 +1,9 @@
+GerNameR v0.1.0 (Release date: 2018-19-03)
+==============
+
+* Initial versions
+* Features:
+  * Selection of subsets of names
+  * Distance calculation between sets of names
+  * Pairing of names (trial generation)
+  * Creation of similar groups of names
