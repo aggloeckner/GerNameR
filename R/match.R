@@ -17,8 +17,35 @@
 
 #' Match most similar pairs for trial generation in a subset of names
 #'
+#' This function matches pairs of names based on similarity to create
+#' a set of trials. Names are matched, such that each name is only used
+#' once and the sum of the distances over all names in total is minimized.
+#'
+#' Normally the principal components are used for matching names, but
+#' other ratings can also be added and emphasized to create sets
+#' of names which are more similar along a special set of ratings.
+#'
 #' @inheritParams partition.names
 #' @inheritDotParams names.dist
+#'
+#' @examples
+#'
+#' # Just match names split on Sex rating
+#' m <- match.pairs(Sex)
+#' m
+#'
+#' # Match names, but discard some which are ambigous in terms of Sex
+#' m <- match.pairs(Sex, discard = 0.2)
+#' m
+#'
+#' # First filter unfamiliar and foreign names
+#' s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
+#' m <- match.pairs(Sex, discard = 0.2, subset=s)
+#' m
+#'
+#' # Emphasize on competence and intelligence (weighted 10 times)
+#' m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+#' m
 #'
 #' @importFrom rlang enquo !!
 #' @importFrom clue solve_LSAP
@@ -60,11 +87,63 @@ print.names.pairs <- function(x, ...) {
   print( rv )
 }
 
+#' Create a group of names all similar to each other
+#'
+#' Creates a group of names with n members from two groups, such that all names
+#' are as similar to each other as possible. Names are not only similar across groups
+#' but also to each other in the group.
+#'
+#' Uses a genetic algorithm to find the best names, so different results may be
+#' found each run.
+#'
+#' To seed the genetic algorithm with well suited sets, first random sets of names
+#' are created. To increase the search space, more names are selected than will later
+#' be retrieved for each of the partitions. The number of additional names, which
+#' are included is controlled by a ga.param value.
+#'
+#' @inheritParams partition.names
+#' @inheritDotParams names.dist
+#'
+#' @param n            Number of names from each group to select
+#' @param ga.params    Parameters to genetic algorithm
+#'                     \describe{
+#'                        \item{penalty.factor}{How strongly to penalize candidate solution,
+#'                         which do not have the right number of names. Increase, if the wrong
+#'                         number of names is returned repeatedly}
+#'                        \item{init.factor}{How many more names to include initialy to increase
+#'                         the search space.}
+#'                        \item{maxiter}{Maximal number of iterations. See \code{\link[GA]{ga}} for details.}
+#'                        \item{run}{Number of consecutive generations without improvement. See \code{\link[GA]{ga}}
+#'                         for details.}
+#'                        \item{popSize}{Initial population size. See \code{\link[GA]{ga}} for details.}
+#'                        \item{pmutation}{Mutation probability. See \code{\link[GA]{ga}} for details.}
+#'                        \item{pcrossover}{Crossover probability. See \code{\link[GA]{ga}} for details.}
+#'                        \item{elitism}{Number of best candidates to keep each iteration.
+#'                         See \code{\link[GA]{ga}} for details.}
+#'                        \item{parallel}{Should the GA run in parallel? See \code{\link[GA]{ga}} for details.}
+#'                        \item{monitor}{Monitor function. See \code{\link[GA]{ga}} for details.}
+#'                     }
 #'
 #'
+#' @importFrom GA ga gabin_uCrossover
+#' @importFrom stats runif
 #'
 #' @export
-match.groups <- function(split, n, discard=0, subset=filter.names(), penalty.factor=1.5, init.factor=5, ...) {
+match.groups <- function(split, n, discard=0, subset=filter.names(),
+                         ga.params = list(), ...) {
+
+  gap <- list( penalty.factor=1.5, init.factor=5, maxiter = 1000,
+               run = 200, popSize = 200, pmutation=0.2, pcrossover = 0.8,
+               elitism = 10, parallel=F, monitor = function(obj) {})
+
+  # Get the passed parameters
+  namsp <- names(gap)
+  gap[(namp <- names(ga.params))] <- ga.params
+  if(length(noNms <- namp[!namp %in% namsp])) {
+    warning("unknown genetic algorithm parameter: ", paste(noNms, collapse = ", "))
+  }
+
+
   split.q <- rlang::enquo( split )
   groups <- partition.names( rlang::`!!`(split.q), discard, subset )
   allnames <- filter.names()
@@ -73,7 +152,7 @@ match.groups <- function(split, n, discard=0, subset=filter.names(), penalty.fac
 
   # Maximal distance, so we can penalize too large and too small solutions correctly
   max.dist <- max(dists)
-  penalty  <- max.dist * penalty.factor
+  penalty  <- max.dist * gap$penalty.factor
 
   # Set up information for GA
   # Number of bits is decided based on elements in both groups
@@ -83,10 +162,10 @@ match.groups <- function(split, n, discard=0, subset=filter.names(), penalty.fac
 
   # give the algorithm some head start by including possible candidates which
   # have the right number of names in each group
-  suggestions <- matrix(0,nrow=200,ncol=nbits)
-  for(i in seq(200)) {
-    x.g1 <- ceiling(runif(init.factor*n, min=0,    max=n.g1))
-    x.g2 <- ceiling(runif(init.factor*n, min=n.g1, max=n.g1+n.g2))
+  suggestions <- matrix(0, nrow=gap$popSize, ncol=nbits)
+  for(i in seq(gap$popSize)) {
+    x.g1 <- ceiling(stats::runif(gap$init.factor*n, min=0,    max=n.g1))
+    x.g2 <- ceiling(stats::runif(gap$init.factor*n, min=n.g1, max=n.g1+n.g2))
     suggestions[i, c(x.g1,x.g2)] <- 1
   }
 
@@ -104,15 +183,16 @@ match.groups <- function(split, n, discard=0, subset=filter.names(), penalty.fac
     }
     # Second part of fitness: Penalty for too large or too small solutions
     n.s.g1 <- sum(x[seq(n.g1)])
-    rv <- rv + abs(n-n.s.g1) * penalty.factor
+    rv <- rv + abs(n-n.s.g1) * penalty
     n.s.g2 <- sum(x[seq(from=n.g1+1,to=n.g1+n.g2)])
-    rv <- rv + abs(n-n.s.g2) * penalty.factor
+    rv <- rv + abs(n-n.s.g2) * penalty
     -rv
   }
 
-  s <- GA::ga( type = "binary", fitness = fitness, nBits = nbits, maxiter = 1000,
-               run = 200, popSize = 200, suggestions = suggestions,
-               crossover = GA::gabin_uCrossover, pmutation = 0.2,
-               monitor = function(obj) {})
+  s <- GA::ga( type = "binary", fitness = fitness, nBits = nbits, maxiter = gap$maxiter,
+               run = gap$run, popSize = gap$popSize, suggestions = suggestions,
+               crossover = GA::gabin_uCrossover, pmutation = gap$pmutation,
+               pcrossover = gap$pcrossover, elitism = gap$elitism, monitor = gap$monitor,
+               parallel = gap$parallel )
   allnames[s@solution==1]
 }

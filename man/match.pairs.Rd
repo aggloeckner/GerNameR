@@ -24,5 +24,32 @@ be created on all names.}
 }}
 }
 \description{
-Match most similar pairs for trial generation in a subset of names
+This function matches pairs of names based on similarity to create
+a set of trials. Names are matched, such that each name is only used
+once and the sum of the distances over all names in total is minimized.
+}
+\details{
+Normally the principal components are used for matching names, but
+other ratings can also be added and emphasized to create sets
+of names which are more similar along a special set of ratings.
+}
+\examples{
+
+# Just match names split on Sex rating
+m <- match.pairs(Sex)
+m
+
+# Match names, but discard some which are ambigous in terms of Sex
+m <- match.pairs(Sex, discard = 0.2)
+m
+
+# First filter unfamiliar and foreign names
+s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
+m <- match.pairs(Sex, discard = 0.2, subset=s)
+m
+
+# Emphasize on competence and intelligence (weighted 10 times)
+m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+m
+
 }

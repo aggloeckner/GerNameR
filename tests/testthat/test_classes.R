@@ -99,3 +99,39 @@ test_that("Partitions have the correct classes", {
   expect_is(s7[2], "names.selection")
 
 })
+
+test_that("Matchings have the correct classes", {
+  s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
+
+  m1 <- match.pairs(Sex)
+  m2 <- match.pairs(Sex, discard = 0.2)
+  m3 <- match.pairs(Sex, discard = 0.2, subset=s)
+  m4 <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+
+  expect_is(m1, "names.pairs")
+  expect_is(m2, "names.pairs")
+  expect_is(m3, "names.pairs")
+  expect_is(m4, "names.pairs")
+
+  expect_is(m1, "names.split")
+  expect_is(m2, "names.split")
+  expect_is(m3, "names.split")
+  expect_is(m4, "names.split")
+
+  expect_is(m1[1], "names.selection")
+  expect_is(m2[1], "names.selection")
+  expect_is(m3[1], "names.selection")
+  expect_is(m4[1], "names.selection")
+
+  expect_is(m1[2], "names.selection")
+  expect_is(m2[2], "names.selection")
+  expect_is(m3[2], "names.selection")
+  expect_is(m4[2], "names.selection")
+
+  ### Group matching
+  g1 <- match.groups(Sex, n=2, discard = 0.2, ga.params = list(run=10, maxiter = 100, popSize = 20))
+  g2 <- match.groups(Sex, n=2, discard = 0.2, subset = s, ga.params = list(run=10, maxiter = 100, popSize = 20))
+
+  expect_is(g1, "names.selection")
+  expect_is(g2, "names.selection")
+})

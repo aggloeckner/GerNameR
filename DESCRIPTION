@@ -11,7 +11,8 @@ Depends: R (>= 3.3.2)
 Imports:
   rlang (>= 0.1.2), 
   pdist (>= 1.2),
-  clue (>= 0.3.54)
+  clue (>= 0.3.54),
+  GA (>= 3.0.2)
 Suggests: testthat (>= 2.0.0)
 License: GPL-3
 Encoding: UTF-8
