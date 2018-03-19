@@ -15,93 +15,104 @@
 #
 ###############################################################################
 
-columns.princomp <- c("PC1","PC2","PC3","PC4","PC5")
-columns.ratings  <- c( "Education", "Age", "Attractiveness", "Intelligence", "Religiousness", "Familiarity",
-                       "Sex", "Nationality", "Modern", "Old", "Ageless", "Competence", "Warmth")
-
-match.names <- function(split, attributes = list(),  discard=0, filter=list(lower=list(), upper=list()), include.pc = F) {
-  trgt.values <- names.mean.pc[,split]
-  # find the target value to perform the split on
-  split.trgt <- median( trgt.values )
-  
-  # Masks for group1 and group2 after splitting
-  g1 <- trgt.values < split.trgt
-  g2 <- trgt.values > split.trgt
-  
-  # Also remove "discard" many elements, unless discard <=0 
-  if(discard > 0){
-    g1 <- trgt.values < quantile(trgt.values[g1],probs=1-discard, names = F)
-    g2 <- trgt.values > quantile(trgt.values[g2],probs=  discard, names = F)
-  }
-  
-  flt.msk <- filter.names(lower=filter$lower, upper=filter$upper, type="mask")
-  g1 <- g1 & flt.msk
-  g2 <- g2 & flt.msk
-  idx.g1 <- which(g1)
-  idx.g2 <- which(g2)
-  
-  # First use the principal components for matching (overall similarity of names)
-  m <- as.matrix( names.mean.pc[,columns.princomp] )
-  
-  # Additional attributes (weighted)
-  if( length(attributes) > 0 ){
-    m <- cbind(m,t(t(names.mean.pc[,names(attributes)]) * unlist(attributes)))
-  }
-  
-  # Pairwise distance matrix
-  dists <- pdist::pdist(m, indices.A = idx.g1, indices.B = idx.g2 )
-  dists <- as.matrix( dists )
+#' Match most similar pairs for trial generation in a subset of names
+#'
+#' @inheritParams partition.names
+#' @inheritDotParams names.dist
+#'
+#' @importFrom rlang enquo !!
+#' @importFrom clue solve_LSAP
+#'
+#' @export
+match.pairs <- function(split, discard=0, subset=filter.names(), ...) {
+  split.q <- rlang::enquo( split )
+  groups <- partition.names( rlang::`!!`(split.q), discard, subset )
+  dists <- names.dist( groups, ... )
   if( ncol(dists) < nrow(dists) ){
     rotated <- T
     dists <- t( dists )
   } else {
     rotated <- F
   }
-  
-  asgn <- clue::solve_LSAP(dists)
-  
+  asgn <- clue::solve_LSAP( dists )
+
   if(rotated) {
-    idx.g1.mtch <- idx.g1[asgn[seq_along(idx.g2)]]
-    idx.g2.mtch <- idx.g2
+    res <- list( g1 = groups[1, as.numeric(asgn) ], g2 = groups[ 2 ])
+    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g2[i]),as.character(res$g1[i])])
   } else {
-    idx.g1.mtch <- idx.g1
-    idx.g2.mtch <- idx.g2[asgn[seq_along(idx.g1)]]
+    res <- list( g1 = groups[ 1 ], g2 = groups[2, as.numeric(asgn) ])
+    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g1[i]),as.character(res$g2[i])])
   }
-  res <- data.frame(name1 = names.mean.pc[idx.g1.mtch, "name"],
-                    name2 = names.mean.pc[idx.g2.mtch, "name"])
-  
-  res$dist <- sapply(seq(nrow(res)), function(i) dists[i,asgn[i]])
-  
-  res[,columns.ratings] <- (names.mean.pc[idx.g1.mtch,columns.ratings] + names.mean.pc[idx.g2.mtch,columns.ratings])/2
-  if(include.pc) {
-    res[,columns.princomp] <- (names.mean.pc[idx.g1.mtch,columns.princomp] + names.mean.pc[idx.g2.mtch,columns.princomp])/2
-  }
-  res[,paste0("diff.",columns.ratings)] <- abs( (names.mean.pc[idx.g1.mtch,columns.ratings] - names.mean.pc[idx.g2.mtch,columns.ratings]) )
-  res[order(res$dist),]
+  ord <- order(res$dist)
+  res$g1 <- res$g1[ord]
+  res$g2 <- res$g2[ord]
+  res$dist <- res$dist[ord]
+
+  class(res) <- c("names.pairs","names.split")
+  res
 }
 
-match.groups <- function(split, n, attributes = list(),  discard=0, filter=list(lower=list(), upper=list()), include.pc = F) {
-  # If we just have to create one group of pairs, we can just match names immediately
-  if(n <= 1) {
-    return( match.names(split, attributes, discard, filter, include.pc) )
+#' @export
+print.names.pairs <- function(x, ...) {
+  rv <- data.frame( name1 = as.character(x$g1),
+                    name2 = as.character(x$g2),
+                    distance = x$dist )
+  print( rv )
+}
+
+#'
+#'
+#'
+#' @export
+match.groups <- function(split, n, discard=0, subset=filter.names(), penalty.factor=1.5, init.factor=5, ...) {
+  split.q <- rlang::enquo( split )
+  groups <- partition.names( rlang::`!!`(split.q), discard, subset )
+  allnames <- filter.names()
+  allnames <- allnames[c(as.numeric(groups[1]),as.numeric(groups[2]))]
+  dists <- names.dist(allnames, ...)
+
+  # Maximal distance, so we can penalize too large and too small solutions correctly
+  max.dist <- max(dists)
+  penalty  <- max.dist * penalty.factor
+
+  # Set up information for GA
+  # Number of bits is decided based on elements in both groups
+  n.g1 <- length(groups[1])
+  n.g2 <- length(groups[2])
+  nbits <- n.g1 + n.g2
+
+  # give the algorithm some head start by including possible candidates which
+  # have the right number of names in each group
+  suggestions <- matrix(0,nrow=200,ncol=nbits)
+  for(i in seq(200)) {
+    x.g1 <- ceiling(runif(init.factor*n, min=0,    max=n.g1))
+    x.g2 <- ceiling(runif(init.factor*n, min=n.g1, max=n.g1+n.g2))
+    suggestions[i, c(x.g1,x.g2)] <- 1
   }
-  # Otherwise we will group up further
-  mtch <- match.groups( split, n-1, attributes, discard, filter, include.pc = T)
-  m <- as.matrix( mtch[,columns.princomp])
-  # Additional attributes (weighted)
-  if( length(attributes) > 0 ){
-    m <- cbind(m,t(t(mtch[,names(attributes)]) * unlist(attributes)))
+
+  # Number of bits for genetic algorithm
+  # Cost function for optimization using GA Package
+  fitness <- function(x){
+    msk <- x == 1
+    n.sol <- sum(x)
+    # First part of fitness: Overall distance of the selected names
+    if(n.sol >= 1) {
+      d <- dists[msk,msk]
+      rv <- sum(d)/(n.sol*(n.sol-1))
+    } else {
+      rv <- 0
+    }
+    # Second part of fitness: Penalty for too large or too small solutions
+    n.s.g1 <- sum(x[seq(n.g1)])
+    rv <- rv + abs(n-n.s.g1) * penalty.factor
+    n.s.g2 <- sum(x[seq(from=n.g1+1,to=n.g1+n.g2)])
+    rv <- rv + abs(n-n.s.g2) * penalty.factor
+    -rv
   }
-  
-  dists <- dist( m )
-  dists <- as.matrix( dists )
-  if( ncol(dists) < nrow(dists) ){
-    rotated <- T
-    dists <- t( dists )
-  } else {
-    rotated <- F
-  }
-  
-  asgn <- clue::solve_LSAP(dists)
-  asgn
+
+  s <- GA::ga( type = "binary", fitness = fitness, nBits = nbits, maxiter = 1000,
+               run = 200, popSize = 200, suggestions = suggestions,
+               crossover = GA::gabin_uCrossover, pmutation = 0.2,
+               monitor = function(obj) {})
+  allnames[s@solution==1]
 }
