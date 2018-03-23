@@ -1,6 +1,7 @@
 Package: GerNameR
 Title: Collection of German names and validated associations
-Version: 0.1.0
+Version: 0.1.1
+Date: 2018-03-23
 Authors@R: c( 
   person("Tillmann", "Nett",  email = "tillmann.nett@fernuni-hagen.de", role = c("aut", "cre")),
   person("Angela", "Dorrough", email = "angela.dorrough@fernuni-hagen.de", role = c("aut")),
