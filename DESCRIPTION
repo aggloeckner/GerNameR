@@ -1,7 +1,7 @@
 Package: GerNameR
 Title: Collection of German names and validated associations
-Version: 0.1.1
-Date: 2018-03-23
+Version: 0.1.2
+Date: 2018-07-03
 Authors@R: c( 
   person("Tillmann", "Nett",  email = "tillmann.nett@fernuni-hagen.de", role = c("aut", "cre")),
   person("Angela", "Dorrough", email = "angela.dorrough@fernuni-hagen.de", role = c("aut")),
@@ -12,7 +12,7 @@ Description: This package provides simple access to a set of German names with a
    Names can be selected based on various criteria to find a set of names suitable for a psychological experiment.
 Depends: R (>= 3.3.2)
 Imports:
-  rlang (>= 0.1.2), 
+  rlang (>= 0.2.0), 
   pdist (>= 1.2),
   clue (>= 0.3.54),
   GA (>= 3.0.2)
