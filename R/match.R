@@ -53,7 +53,7 @@
 #' @export
 match.pairs <- function(split, discard=0, subset=filter.names(), ...) {
   split.q <- rlang::enquo( split )
-  groups <- partition.names( rlang::`!!`(split.q), discard, subset )
+  groups <- partition.names( !!split.q, discard, subset )
   dists <- names.dist( groups, ... )
   if( ncol(dists) < nrow(dists) ){
     rotated <- T
@@ -145,7 +145,7 @@ match.groups <- function(split, n, discard=0, subset=filter.names(),
 
 
   split.q <- rlang::enquo( split )
-  groups <- partition.names( rlang::`!!`(split.q), discard, subset )
+  groups <- partition.names( !!split.q, discard, subset )
   allnames <- filter.names()
   allnames <- allnames[c(as.numeric(groups[1]),as.numeric(groups[2]))]
   dists <- names.dist(allnames, ...)
