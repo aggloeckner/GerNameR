@@ -82,8 +82,8 @@ partition.names <- function(split, discard=0, subset = filter.names()) {
   trgt.high <- 0.5 + discard/2
   trgt.low  <- 0.5 - discard/2
 
-  g1 <- filter.names( rlang::`!!`(split.q) < trgt.low )
-  g2 <- filter.names( rlang::`!!`(split.q) > trgt.high )
+  g1 <- filter.names( !!split.q < trgt.low )
+  g2 <- filter.names( !!split.q > trgt.high )
 
   rv <- list(g1 = g1 & subset, g2 = g2 & subset)
   class(rv) <- "names.split"

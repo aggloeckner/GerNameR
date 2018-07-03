@@ -65,7 +65,7 @@ filter.names <- function(...) {
     percs <- seq(0,1,length.out = nrow(names.mean.pc) )
     names.percs <- apply( names.mean.pc[,columns.ratings], MARGIN = 2, function(clm) percs[rank(clm, ties.method="min")])
 
-    msks <- rlang::eval_tidy(qs, data = as.data.frame( names.percs ) )
+    msks <- lapply(qs, rlang::eval_tidy, data = as.data.frame( names.percs ) )
     msks <- do.call( cbind, msks )
     rv <- apply(msks, MARGIN=1, all)
   }
