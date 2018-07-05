@@ -127,12 +127,16 @@ as.character.names.selection <- function(x, ...) {
 
 #' @export
 as.data.frame.names.selection <- function(x, ...) {
-  data.frame( name = as.character(x), stringsAsFactors = F, ... )
+  ratings <- rlang::ensyms( ... )
+  if( length( ratings ) == 0 ) {
+    return( data.frame( name = as.character(x), stringsAsFactors = F ) )
+  }
+  data.frame( name = as.character(x), names.ratings(subset=x, ...), row.names = seq_along(x), stringsAsFactors = F )
 }
 
 #' @export
 print.names.selection <- function(x, ... ) {
-  print( as.data.frame( x ), ... )
+  print( as.data.frame( x, ...) )
 }
 
 #' @export
