@@ -305,3 +305,89 @@ test_that("Matches have correct size", {
   expect_equal(min(length(m40[1]),length(m40[2])), min(length(sp8[1]),length(sp8[3])) )
   expect_equal(min(length(m41[1]),length(m41[2])), min(length(sp8[2]),length(sp8[3])) )
 })
+
+test_that("Matches only contain the correct names", {
+
+  ##### Setup
+
+  s0 <- filter.names()
+  s1 <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
+  sp1 <- partition.names(Sex)
+  sp2 <- partition.names(Sex, discard = 0.2)
+  sp3 <- partition.names(Sex, discard = 0.2, subset = s1)
+  sp4 <- partition.names.random()
+  sp5 <- partition.names.random(subset = s1)
+  sp6 <- partition.names.random(prop=c(1,2))
+  sp7 <- partition.names.random(subset = s1, prop=c(1,2))
+  sp8 <- partition.names.random(prop=c(1,2,4))
+
+
+
+  m1 <- match.pairs(sp1[1], sp1[2])
+
+  expect_equal(length(m1[1]), length(m1[1] & sp1[1]))
+  expect_equal(length(m1[2]), length(m1[2] & sp1[2]))
+
+
+  m2 <- match.pairs(sp2[1], sp2[2])
+
+  expect_equal(length(m2[1]), length(m2[1] & sp2[1]))
+  expect_equal(length(m2[2]), length(m2[2] & sp2[2]))
+
+
+  m3 <- match.pairs(sp3[1], sp3[2])
+
+  expect_equal(length(m3[1]), length(m3[1] & sp3[1]))
+  expect_equal(length(m3[2]), length(m3[2] & sp3[2]))
+
+
+  m4 <- match.pairs(sp4[1], sp4[2])
+
+  expect_equal(length(m4[1]), length(m4[1] & sp4[1]))
+  expect_equal(length(m4[2]), length(m4[2] & sp4[2]))
+
+
+  m5 <- match.pairs(sp5[1], sp5[2])
+
+  expect_equal(length(m5[1]), length(m5[1] & sp5[1]))
+  expect_equal(length(m5[2]), length(m5[2] & sp5[2]))
+
+
+  m6 <- match.pairs(sp6[1], sp6[2])
+
+  expect_equal(length(m6[1]), length(m6[1] & sp6[1]))
+  expect_equal(length(m6[2]), length(m6[2] & sp6[2]))
+
+
+  m7 <- match.pairs(sp7[1], sp7[2])
+
+  expect_equal(length(m7[1]), length(m7[1] & sp7[1]))
+  expect_equal(length(m7[2]), length(m7[2] & sp7[2]))
+
+
+  m8 <- match.pairs(sp8[1], sp8[2])
+  m9 <- match.pairs(sp8[2], sp8[1])
+  m10 <- match.pairs(sp8[1], sp8[3])
+  m11 <- match.pairs(sp8[3], sp8[1])
+  m12 <- match.pairs(sp8[2], sp8[3])
+  m13 <- match.pairs(sp8[3], sp8[2])
+
+  expect_equal(length(m8[1]), length(m8[1] & sp8[1]))
+  expect_equal(length(m8[2]), length(m8[2] & sp8[2]))
+
+  expect_equal(length(m9[1]), length(m9[1] & sp8[2]))
+  expect_equal(length(m9[2]), length(m9[2] & sp8[1]))
+
+  expect_equal(length(m10[1]), length(m10[1] & sp8[1]))
+  expect_equal(length(m10[2]), length(m10[2] & sp8[3]))
+
+  expect_equal(length(m11[1]), length(m11[1] & sp8[3]))
+  expect_equal(length(m11[2]), length(m11[2] & sp8[1]))
+
+  expect_equal(length(m12[1]), length(m12[1] & sp8[2]))
+  expect_equal(length(m12[2]), length(m12[2] & sp8[3]))
+
+  expect_equal(length(m13[1]), length(m13[1] & sp8[3]))
+  expect_equal(length(m13[2]), length(m13[2] & sp8[2]))
+
+})
