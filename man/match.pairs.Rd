@@ -4,23 +4,17 @@
 \alias{match.pairs}
 \title{Match most similar pairs for trial generation in a subset of names}
 \usage{
-match.pairs(split, discard = 0, subset = filter.names(), ...)
+match.pairs(n1, n2, ...)
 }
 \arguments{
-\item{split}{The name of the rating on which the split
-should be performed}
+\item{n1}{First subset of the names used in pairing}
 
-\item{discard}{The percentage of names too close to the median
-which should be discarded (default: 0, i.e. keep
-all names)}
+\item{n2}{Second subset of the names used in pairing}
 
-\item{subset}{An optional subset on which the split should be
-done. If this is left out, the split will
-be created on all names.}
-
-\item{...}{Arguments passed on to \code{names.dist}
+\item{...}{Arguments passed on to \code{match.split}
 \describe{
-  \item{x}{The object containing the names}
+  \item{s}{The split of the names. Only the first two groups will be used,
+if the split contains more than two groups.}
 }}
 }
 \description{
@@ -32,24 +26,22 @@ once and the sum of the distances over all names in total is minimized.
 Normally the principal components are used for matching names, but
 other ratings can also be added and emphasized to create sets
 of names which are more similar along a special set of ratings.
+
+Note: This function takes the two groups of names as separate arguments,
 }
 \examples{
 
-# Just match names split on Sex rating
-m <- match.pairs(Sex)
-m
+# Split the names according to intelligence
+s <- partition.names(Intelligence)
 
-# Match names, but discard some which are ambigous in terms of Sex
-m <- match.pairs(Sex, discard = 0.2)
-m
+# Further split the names randomly
+low <- partition.names.random(subset=s[1], prop=c(1,1,1,1))
+high <- partition.names.random(subset=s[1], prop=c(1,1,1,1))
 
-# First filter unfamiliar and foreign names
-s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
-m <- match.pairs(Sex, discard = 0.2, subset=s)
-m
-
-# Emphasize on competence and intelligence (weighted 10 times)
-m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
-m
+# Create sets with matching high/low intelligence names
+low_low <- match.pairs(low[1], low[2])
+low_high <- match.pairs(low[3], high[1])
+high_low <- match.pairs(high[2], low[4])
+high_high <- match.pairs(high[3], high[4])
 
 }
