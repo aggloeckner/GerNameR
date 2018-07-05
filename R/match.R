@@ -157,14 +157,19 @@ match.partition <- function(split, discard=0, subset=filter.names(), ...) {
 }
 
 as.data.frame.names.pairs <- function(x, ...) {
+  qs <- rlang::ensyms( ... )
+  r <- data.frame( names.ratings(subset=x$g1, ...), names.ratings(subset=x$g2, ...) )
+  lbls <- unlist( lapply(qs, as.character) )
+  colnames(r) <- c(paste("name1", lbls, sep="."), paste("name2", lbls, sep="."))
   data.frame( name1 = as.character(x$g1),
               name2 = as.character(x$g2),
-              distance = x$dist, ... )
+              distance = x$dist,
+              r, row.names = seq_along(x$g1))
 }
 
 #' @export
 print.names.pairs <- function(x, ...) {
-  print( as.data.frame( x ), ... )
+  print( as.data.frame( x, ... ) )
 }
 
 #' Create a group of names all similar to each other
