@@ -19,7 +19,7 @@ context("Partition")
 
 ###############################################
 
-test_that("Partition have correct sizes", {
+test_that("Partitions have correct sizes", {
   ##### Setup
 
   n1 <- filter.names()
@@ -93,5 +93,66 @@ test_that("Partition have correct sizes", {
   expect_true(abs(length(s13[2]) - length(s13[3])/2) <= 1)
   expect_true(abs(length(s14[2]) - length(s14[3])/2) <= 1)
   expect_true(abs(length(s15[2]) - length(s15[3])/2) <= 1)
+
+})
+
+test_that("Partitions are disjoint", {
+  ##### Setup
+
+  n1 <- filter.names()
+  n2 <- filter.names(Competence >= 0.5)
+
+  ##### Attribute Splits
+
+  s1 <- partition.names(Sex)
+  s2 <- partition.names(Sex, subset = n1)
+  s3 <- partition.names(Sex, subset = n2)
+
+  expect_length(s1[1] & s1[2], 0)
+  expect_length(s2[1] & s2[2], 0)
+  expect_length(s3[1] & s3[2], 0)
+
+
+  s4 <- partition.names(Sex, discard=0.2)
+  s5 <- partition.names(Sex, discard=0.2, subset = n1)
+  s6 <- partition.names(Sex, discard=0.2, subset = n2)
+
+  expect_length(s4[1] & s4[2], 0)
+  expect_length(s5[1] & s5[2], 0)
+  expect_length(s6[1] & s6[2], 0)
+
+  #### Random Splits
+
+  s7 <- partition.names.random()
+  s8 <- partition.names.random(subset = n1)
+  s9 <- partition.names.random(subset = n2)
+
+  expect_length(s7[1] & s7[2], 0)
+  expect_length(s8[1] & s8[2], 0)
+  expect_length(s9[1] & s9[2], 0)
+
+  s10 <- partition.names.random(prop = c(1,2))
+  s11 <- partition.names.random(subset = n1, prop = c(1,2))
+  s12 <- partition.names.random(subset = n2, prop = c(1,2))
+
+  expect_length(s10[1] & s10[2], 0)
+  expect_length(s11[1] & s11[2], 0)
+  expect_length(s12[1] & s12[2], 0)
+
+  s13 <- partition.names.random(prop = c(1,2,4))
+  s14 <- partition.names.random(subset = n1, prop = c(1,2,4))
+  s15 <- partition.names.random(subset = n2, prop = c(1,2,4))
+
+  expect_length(s13[1] & s13[2], 0)
+  expect_length(s14[1] & s14[2], 0)
+  expect_length(s15[1] & s15[2], 0)
+
+  expect_length(s13[1] & s13[3], 0)
+  expect_length(s14[1] & s14[3], 0)
+  expect_length(s15[1] & s15[3], 0)
+
+  expect_length(s13[2] & s13[3], 0)
+  expect_length(s14[2] & s14[3], 0)
+  expect_length(s15[2] & s15[3], 0)
 
 })
