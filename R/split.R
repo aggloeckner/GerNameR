@@ -15,6 +15,12 @@
 #
 ###############################################################################
 
+make.split <- function(...) {
+  rv <- list( ... )
+  class(rv) <- "names.split"
+  rv
+}
+
 #' Split a set of names into two subsets based on a rating
 #'
 #' Creates a median split based on a given rating. In addition a
@@ -85,9 +91,7 @@ partition.names <- function(split, discard=0, subset = filter.names()) {
   g1 <- filter.names( !!split.q < trgt.low )
   g2 <- filter.names( !!split.q > trgt.high )
 
-  rv <- list(low = g1 & subset, high = g2 & subset)
-  class(rv) <- "names.split"
-  rv
+  make.split(low = g1 & subset, high = g2 & subset)
 }
 
 #' Split a set of names into random subsets
@@ -136,8 +140,7 @@ partition.names.random <- function(subset = filter.names(), prop = c(0.5,0.5)) {
 
   msks <- lapply(seq_along(upper), function(i) (lower[i] < c) & (c <= upper[i]))
   rv <- lapply(msks, function(msk) make.names.selection( sort( idx[msk] ) ) )
-  class(rv) <- "names.split"
-  rv
+  do.call(make.split, rv)
 }
 
 #' @export
