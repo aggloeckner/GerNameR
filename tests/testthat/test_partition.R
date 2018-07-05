@@ -156,3 +156,65 @@ test_that("Partitions are disjoint", {
   expect_length(s15[2] & s15[3], 0)
 
 })
+
+test_that("Partitions split correctly along the ratings", {
+  ##### Setup
+
+  n1 <- filter.names()
+  n2 <- filter.names(Competence >= 0.5)
+
+  s1 <- partition.names(Attractiveness)
+  s2 <- partition.names(Attractiveness, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s1[1], Attractiveness)) < min(names.ratings(subset=s1[2], Attractiveness)) )
+  expect_true( max(names.ratings(subset=s2[1], Attractiveness)) < min(names.ratings(subset=s2[2], Attractiveness)) )
+
+
+  s3 <- partition.names(Attractiveness, subset = n1)
+  s4 <- partition.names(Attractiveness, subset = n1, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s3[1], Attractiveness)) < min(names.ratings(subset=s3[2], Attractiveness)) )
+  expect_true( max(names.ratings(subset=s4[1], Attractiveness)) < min(names.ratings(subset=s4[2], Attractiveness)) )
+
+
+  s5 <- partition.names(Attractiveness, subset = n2)
+  s6 <- partition.names(Attractiveness, subset = n2, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s5[1], Attractiveness)) < min(names.ratings(subset=s5[2], Attractiveness)) )
+  expect_true( max(names.ratings(subset=s6[1], Attractiveness)) < min(names.ratings(subset=s6[2], Attractiveness)) )
+})
+
+test_that("Partitions discard correctly", {
+  ##### Setup
+
+  n1 <- filter.names()
+  n2 <- filter.names(Competence >= 0.5)
+
+  s1 <- partition.names(Attractiveness)
+  s2 <- partition.names(Attractiveness, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s1[1], Attractiveness)) >= max(names.ratings(subset=s2[1], Attractiveness)) )
+  expect_true( min(names.ratings(subset=s1[1], Attractiveness)) <= min(names.ratings(subset=s2[2], Attractiveness)) )
+
+
+  s3 <- partition.names(Attractiveness, subset = n1)
+  s4 <- partition.names(Attractiveness, subset = n1, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s3[1], Attractiveness)) >= max(names.ratings(subset=s4[1], Attractiveness)) )
+  expect_true( min(names.ratings(subset=s3[1], Attractiveness)) <= min(names.ratings(subset=s4[2], Attractiveness)) )
+
+
+  s5 <- partition.names(Attractiveness, subset = n2)
+  s6 <- partition.names(Attractiveness, subset = n2, discard = 0.2)
+
+  expect_true( max(names.ratings(subset=s5[1], Attractiveness)) >= max(names.ratings(subset=s6[1], Attractiveness)) )
+  expect_true( min(names.ratings(subset=s5[1], Attractiveness)) <= min(names.ratings(subset=s6[2], Attractiveness)) )
+
+
+  expect_true( max(names.ratings(subset=s1[1], Attractiveness)) >= max(names.ratings(subset=s5[1], Attractiveness)) )
+  expect_true( min(names.ratings(subset=s1[1], Attractiveness)) <= min(names.ratings(subset=s5[2], Attractiveness)) )
+
+  expect_true( max(names.ratings(subset=s2[1], Attractiveness)) >= max(names.ratings(subset=s6[1], Attractiveness)) )
+  expect_true( min(names.ratings(subset=s2[1], Attractiveness)) <= min(names.ratings(subset=s6[2], Attractiveness)) )
+})
+
