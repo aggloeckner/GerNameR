@@ -159,7 +159,7 @@ match.partition <- function(split, discard=0, subset=filter.names(), ...) {
 as.data.frame.names.pairs <- function(x, ...) {
   data.frame( name1 = as.character(x$g1),
               name2 = as.character(x$g2),
-              distance = x$dist, ... )
+              distance = x$dist, stringsAsFactors = F, ... )
 }
 
 #' @export
