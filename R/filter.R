@@ -126,8 +126,13 @@ as.character.names.selection <- function(x, ...) {
 }
 
 #' @export
+as.data.frame.names.selection <- function(x, ...) {
+  data.frame( name = as.character(x), ... )
+}
+
+#' @export
 print.names.selection <- function(x, ... ) {
-  print( as.character( x ) )
+  print( as.data.frame( x ), ... )
 }
 
 #' @export
