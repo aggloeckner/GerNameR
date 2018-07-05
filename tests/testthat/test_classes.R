@@ -57,6 +57,18 @@ test_that("Selections have the correct classes", {
   expect_is(as.data.frame(so1), "data.frame")
   expect_is(as.data.frame(so2), "data.frame")
 
+  expect_is(as.data.frame(s0, Intelligence), "data.frame")
+  expect_is(as.data.frame(s1, Intelligence), "data.frame")
+  expect_is(as.data.frame(s2, Intelligence), "data.frame")
+  expect_is(as.data.frame(so1, Intelligence), "data.frame")
+  expect_is(as.data.frame(so2, Intelligence), "data.frame")
+
+  expect_is(as.data.frame(s0, Intelligence, Warmth), "data.frame")
+  expect_is(as.data.frame(s1, Intelligence, Warmth), "data.frame")
+  expect_is(as.data.frame(s2, Intelligence, Warmth), "data.frame")
+  expect_is(as.data.frame(so1, Intelligence, Warmth), "data.frame")
+  expect_is(as.data.frame(so2, Intelligence, Warmth), "data.frame")
+
 })
 
 test_that("Partitions have the correct classes", {
@@ -196,6 +208,9 @@ test_that("Matchings have the correct classes", {
   expect_is(m1[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m1), "data.frame")
+  expect_is(as.data.frame(m1, Intelligence), "data.frame")
+  expect_is(as.data.frame(m1, Intelligence, Warmth), "data.frame")
+
 
 
   m2 <- match.partition(Sex, discard = 0.2)
@@ -206,6 +221,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m2[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m2), "data.frame")
+  expect_is(as.data.frame(m2, Intelligence), "data.frame")
+  expect_is(as.data.frame(m2, Intelligence, Warmth), "data.frame")
 
 
   m3 <- match.partition(Sex, discard = 0.2, subset=s)
@@ -216,6 +233,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m3[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m3), "data.frame")
+  expect_is(as.data.frame(m3, Intelligence), "data.frame")
+  expect_is(as.data.frame(m3, Intelligence, Warmth), "data.frame")
 
 
   m4 <- match.partition(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
@@ -226,6 +245,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m4[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m4), "data.frame")
+  expect_is(as.data.frame(m4, Intelligence), "data.frame")
+  expect_is(as.data.frame(m4, Intelligence, Warmth), "data.frame")
 
   #### Pairwise matching based on predefined split
 
@@ -237,6 +258,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m5[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m5), "data.frame")
+  expect_is(as.data.frame(m5, Intelligence), "data.frame")
+  expect_is(as.data.frame(m5, Intelligence, Warmth), "data.frame")
 
 
   m6 <- match.split(sp2)
@@ -247,6 +270,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m6[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m6), "data.frame")
+  expect_is(as.data.frame(m6, Intelligence), "data.frame")
+  expect_is(as.data.frame(m6, Intelligence, Warmth), "data.frame")
 
 
   m7 <- match.split(sp3)
@@ -257,6 +282,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m7[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m7), "data.frame")
+  expect_is(as.data.frame(m7, Intelligence), "data.frame")
+  expect_is(as.data.frame(m7, Intelligence, Warmth), "data.frame")
 
 
   m8 <- match.split(sp3, Competence=10, Intelligence=10)
@@ -267,6 +294,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m8[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m8), "data.frame")
+  expect_is(as.data.frame(m8, Intelligence), "data.frame")
+  expect_is(as.data.frame(m8, Intelligence, Warmth), "data.frame")
 
 
   m9 <- match.split(sp4)
@@ -277,6 +306,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m9[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m9), "data.frame")
+  expect_is(as.data.frame(m9, Intelligence), "data.frame")
+  expect_is(as.data.frame(m9, Intelligence, Warmth), "data.frame")
 
 
   m10 <- match.split(sp5)
@@ -287,6 +318,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m10[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m10), "data.frame")
+  expect_is(as.data.frame(m10, Intelligence), "data.frame")
+  expect_is(as.data.frame(m10, Intelligence, Warmth), "data.frame")
 
 
   m11 <- match.split(sp6)
@@ -297,6 +330,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m11[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m11), "data.frame")
+  expect_is(as.data.frame(m11, Intelligence), "data.frame")
+  expect_is(as.data.frame(m11, Intelligence, Warmth), "data.frame")
 
 
   m12 <- match.split(sp7)
@@ -307,6 +342,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m12[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m12), "data.frame")
+  expect_is(as.data.frame(m12, Intelligence), "data.frame")
+  expect_is(as.data.frame(m12, Intelligence, Warmth), "data.frame")
 
 
   m13 <- match.split(sp8)
@@ -317,6 +354,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m13[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m13), "data.frame")
+  expect_is(as.data.frame(m13, Intelligence), "data.frame")
+  expect_is(as.data.frame(m13, Intelligence, Warmth), "data.frame")
 
   ##### Pairwise matching based on two separated name sets
 
@@ -328,6 +367,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m14[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m14), "data.frame")
+  expect_is(as.data.frame(m14, Intelligence), "data.frame")
+  expect_is(as.data.frame(m14, Intelligence, Warmth), "data.frame")
 
 
   m15 <- match.pairs(sp5[1],sp5[2])
@@ -338,6 +379,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m15[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m15), "data.frame")
+  expect_is(as.data.frame(m15, Intelligence), "data.frame")
+  expect_is(as.data.frame(m15, Intelligence, Warmth), "data.frame")
 
 
   m16 <- match.pairs(sp6[1],sp6[2])
@@ -348,6 +391,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m16[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m16), "data.frame")
+  expect_is(as.data.frame(m16, Intelligence), "data.frame")
+  expect_is(as.data.frame(m16, Intelligence, Warmth), "data.frame")
 
 
   m17 <- match.pairs(sp7[1],sp7[2])
@@ -358,6 +403,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m17[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m17), "data.frame")
+  expect_is(as.data.frame(m17, Intelligence), "data.frame")
+  expect_is(as.data.frame(m17, Intelligence, Warmth), "data.frame")
 
 
   m18 <- match.pairs(sp8[1],sp8[2])
@@ -368,6 +415,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m18[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m18), "data.frame")
+  expect_is(as.data.frame(m18, Intelligence), "data.frame")
+  expect_is(as.data.frame(m18, Intelligence, Warmth), "data.frame")
 
   m19 <- match.pairs(sp8[1],sp8[3])
 
@@ -377,6 +426,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m19[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m19), "data.frame")
+  expect_is(as.data.frame(m19, Intelligence), "data.frame")
+  expect_is(as.data.frame(m19, Intelligence, Warmth), "data.frame")
 
   ##### Group matching
 
