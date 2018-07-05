@@ -54,84 +54,162 @@ test_that("Selections have the correct classes", {
 })
 
 test_that("Partitions have the correct classes", {
-  s0 <- partition.names(Sex)
-  s1 <- partition.names(Sex, discard = 0.2)
+  ##### Setup
 
   n1 <- filter.names(Competence >= 0.5)
   n2 <- filter.names(Competence >= 0.5, Warmth >= 0.5)
+  n3 <- n2[seq(1,100)]
+
+  ##### Attribute Splits
+
+  s0 <- partition.names(Sex)
+  s1 <- partition.names(Sex, discard = 0.2)
+
+  expect_is(s0, "names.split")
+  expect_is(s1, "names.split")
+  expect_is(s0[1], "names.selection")
+  expect_is(s1[1], "names.selection")
+  expect_is(s0[2], "names.selection")
+  expect_is(s1[2], "names.selection")
+
 
   s2 <- partition.names(Sex, subset = n1)
   s3 <- partition.names(Sex, discard = 0.2, subset = n1)
 
+  expect_is(s2, "names.split")
+  expect_is(s3, "names.split")
+  expect_is(s2[1], "names.selection")
+  expect_is(s3[1], "names.selection")
+  expect_is(s2[2], "names.selection")
+  expect_is(s3[2], "names.selection")
+
+
   s4 <- partition.names(Sex, subset = n2)
   s5 <- partition.names(Sex, discard = 0.2, subset = n2)
 
-  n3 <- n2[seq(1,100)]
+  expect_is(s4, "names.split")
+  expect_is(s5, "names.split")
+  expect_is(s4[1], "names.selection")
+  expect_is(s5[1], "names.selection")
+  expect_is(s4[2], "names.selection")
+  expect_is(s5[2], "names.selection")
+
 
   s6 <- partition.names(Sex, subset = n3)
   s7 <- partition.names(Sex, discard = 0.2, subset = n3)
 
-  expect_is(s0, "names.split")
-  expect_is(s1, "names.split")
-  expect_is(s2, "names.split")
-  expect_is(s3, "names.split")
-  expect_is(s4, "names.split")
-  expect_is(s5, "names.split")
   expect_is(s6, "names.split")
   expect_is(s7, "names.split")
-
-  expect_is(s0[1], "names.selection")
-  expect_is(s1[1], "names.selection")
-  expect_is(s2[1], "names.selection")
-  expect_is(s3[1], "names.selection")
-  expect_is(s4[1], "names.selection")
-  expect_is(s5[1], "names.selection")
   expect_is(s6[1], "names.selection")
   expect_is(s7[1], "names.selection")
-
-  expect_is(s0[2], "names.selection")
-  expect_is(s1[2], "names.selection")
-  expect_is(s2[2], "names.selection")
-  expect_is(s3[2], "names.selection")
-  expect_is(s4[2], "names.selection")
-  expect_is(s5[2], "names.selection")
   expect_is(s6[2], "names.selection")
   expect_is(s7[2], "names.selection")
 
+  ##### Random splits
+
+  s8 <- partition.names.random()
+  s9 <- partition.names.random(subset = n1)
+  s10 <- partition.names.random(subset = n2)
+  s11 <- partition.names.random(subset = n3)
+
+  expect_is(s8, "names.split")
+  expect_is(s9, "names.split")
+  expect_is(s10, "names.split")
+  expect_is(s11, "names.split")
+  expect_is(s8[1], "names.selection")
+  expect_is(s9[1], "names.selection")
+  expect_is(s10[1], "names.selection")
+  expect_is(s11[1], "names.selection")
+  expect_is(s8[2], "names.selection")
+  expect_is(s9[2], "names.selection")
+  expect_is(s10[2], "names.selection")
+  expect_is(s11[2], "names.selection")
+
+
+  s12 <- partition.names.random(prop = c(1,2))
+  s13 <- partition.names.random(subset = n1, prop = c(1,2))
+  s14 <- partition.names.random(subset = n2, prop = c(1,2))
+  s15 <- partition.names.random(subset = n3, prop = c(1,2))
+
+  expect_is(s12, "names.split")
+  expect_is(s13, "names.split")
+  expect_is(s14, "names.split")
+  expect_is(s15, "names.split")
+  expect_is(s12[1], "names.selection")
+  expect_is(s13[1], "names.selection")
+  expect_is(s14[1], "names.selection")
+  expect_is(s15[1], "names.selection")
+  expect_is(s12[2], "names.selection")
+  expect_is(s13[2], "names.selection")
+  expect_is(s14[2], "names.selection")
+  expect_is(s15[2], "names.selection")
+
+
+  s16 <- partition.names.random(prop = c(1,2,3))
+  s17 <- partition.names.random(subset = n1, prop = c(1,2,3))
+  s18 <- partition.names.random(subset = n2, prop = c(1,2,3))
+  s19 <- partition.names.random(subset = n3, prop = c(1,2,3))
+
+  expect_is(s16, "names.split")
+  expect_is(s17, "names.split")
+  expect_is(s18, "names.split")
+  expect_is(s19, "names.split")
+  expect_is(s16[1], "names.selection")
+  expect_is(s17[1], "names.selection")
+  expect_is(s18[1], "names.selection")
+  expect_is(s19[1], "names.selection")
+  expect_is(s16[2], "names.selection")
+  expect_is(s17[2], "names.selection")
+  expect_is(s18[2], "names.selection")
+  expect_is(s19[2], "names.selection")
+  expect_is(s16[3], "names.selection")
+  expect_is(s17[3], "names.selection")
+  expect_is(s18[3], "names.selection")
+  expect_is(s19[3], "names.selection")
 })
 
 test_that("Matchings have the correct classes", {
   s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
 
   m1 <- match.pairs(Sex)
-  m2 <- match.pairs(Sex, discard = 0.2)
-  m3 <- match.pairs(Sex, discard = 0.2, subset=s)
-  m4 <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
 
   expect_is(m1, "names.pairs")
-  expect_is(m2, "names.pairs")
-  expect_is(m3, "names.pairs")
-  expect_is(m4, "names.pairs")
-
   expect_is(m1, "names.split")
-  expect_is(m2, "names.split")
-  expect_is(m3, "names.split")
-  expect_is(m4, "names.split")
-
   expect_is(m1[1], "names.selection")
-  expect_is(m2[1], "names.selection")
-  expect_is(m3[1], "names.selection")
-  expect_is(m4[1], "names.selection")
-
   expect_is(m1[2], "names.selection")
+
+
+  m2 <- match.pairs(Sex, discard = 0.2)
+
+  expect_is(m2, "names.pairs")
+  expect_is(m2, "names.split")
+  expect_is(m2[1], "names.selection")
   expect_is(m2[2], "names.selection")
+
+
+  m3 <- match.pairs(Sex, discard = 0.2, subset=s)
+
+  expect_is(m3, "names.pairs")
+  expect_is(m3, "names.split")
+  expect_is(m3[1], "names.selection")
   expect_is(m3[2], "names.selection")
+
+
+  m4 <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+
+  expect_is(m4, "names.pairs")
+  expect_is(m4, "names.split")
+  expect_is(m4[1], "names.selection")
   expect_is(m4[2], "names.selection")
 
-  ### Group matching
+  ##### Group matching
+
   g1 <- match.groups(Sex, n=2, discard = 0.2, ga.params = list(run=10, maxiter = 100, popSize = 20))
-  g2 <- match.groups(Sex, n=2, discard = 0.2, subset = s, ga.params = list(run=10, maxiter = 100, popSize = 20))
 
   expect_is(g1, "names.selection")
+
+
+  g2 <- match.groups(Sex, n=2, discard = 0.2, subset = s, ga.params = list(run=10, maxiter = 100, popSize = 20))
+
   expect_is(g2, "names.selection")
 })

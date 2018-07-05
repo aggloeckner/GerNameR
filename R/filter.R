@@ -28,6 +28,12 @@
 # looses duplicates, as there is no easy way to keep this information).
 
 
+make.names.selection <- function(v) {
+  rv <- v
+  class(rv) <- c("names.selection", class(rv))
+  rv
+}
+
 #' Filter a subset from the names based on percentiles
 #'
 #' This method filters a set of names from the complete
@@ -70,8 +76,7 @@ filter.names <- function(...) {
     rv <- apply(msks, MARGIN=1, all)
   }
 
-  class(rv) <- c("names.selection", class(rv))
-  rv
+  make.names.selection( rv )
 }
 
 #' @S3method as.logical names.selection
