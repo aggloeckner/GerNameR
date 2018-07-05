@@ -51,6 +51,12 @@ test_that("Selections have the correct classes", {
   expect_is(as.logical(so1), "logical")
   expect_is(as.logical(so2), "logical")
 
+  expect_is(as.data.frame(s0), "data.frame")
+  expect_is(as.data.frame(s1), "data.frame")
+  expect_is(as.data.frame(s2), "data.frame")
+  expect_is(as.data.frame(so1), "data.frame")
+  expect_is(as.data.frame(so2), "data.frame")
+
 })
 
 test_that("Partitions have the correct classes", {
@@ -177,6 +183,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m1, "names.split")
   expect_is(m1[1], "names.selection")
   expect_is(m1[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m1), "data.frame")
 
 
   m2 <- match.pairs(Sex, discard = 0.2)
@@ -185,6 +193,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m2, "names.split")
   expect_is(m2[1], "names.selection")
   expect_is(m2[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m2), "data.frame")
 
 
   m3 <- match.pairs(Sex, discard = 0.2, subset=s)
@@ -193,6 +203,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m3, "names.split")
   expect_is(m3[1], "names.selection")
   expect_is(m3[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m3), "data.frame")
 
 
   m4 <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
@@ -201,6 +213,8 @@ test_that("Matchings have the correct classes", {
   expect_is(m4, "names.split")
   expect_is(m4[1], "names.selection")
   expect_is(m4[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m4), "data.frame")
 
   ##### Group matching
 
