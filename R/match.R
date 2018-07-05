@@ -80,11 +80,15 @@ match.pairs <- function(split, discard=0, subset=filter.names(), ...) {
 }
 
 #' @export
+as.data.frame.names.pairs <- function(x, ...) {
+  data.frame( name1 = as.character(x$g1),
+              name2 = as.character(x$g2),
+              distance = x$dist, ... )
+}
+
+#' @export
 print.names.pairs <- function(x, ...) {
-  rv <- data.frame( name1 = as.character(x$g1),
-                    name2 = as.character(x$g2),
-                    distance = x$dist )
-  print( rv )
+  print( as.data.frame( x ), ... )
 }
 
 #' Create a group of names all similar to each other
