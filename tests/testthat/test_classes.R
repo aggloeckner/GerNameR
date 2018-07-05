@@ -176,8 +176,19 @@ test_that("Partitions have the correct classes", {
 
 test_that("Matchings have the correct classes", {
   s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
+  sp1 <- partition.names(Sex)
+  sp2 <- partition.names(Sex, discard = 0.2)
+  sp3 <- partition.names(Sex, discard = 0.2, subset = s)
+  sp4 <- partition.names.random()
+  sp5 <- partition.names.random(subset = s)
+  sp6 <- partition.names.random(prop=c(1,2))
+  sp7 <- partition.names.random(subset = s, prop=c(1,2))
+  sp8 <- partition.names.random(prop=c(1,2,4))
 
-  m1 <- match.pairs(Sex)
+
+  #### Pairwise matching based on attribute
+
+  m1 <- match.partition(Sex)
 
   expect_is(m1, "names.pairs")
   expect_is(m1, "names.split")
@@ -187,7 +198,7 @@ test_that("Matchings have the correct classes", {
   expect_is(as.data.frame(m1), "data.frame")
 
 
-  m2 <- match.pairs(Sex, discard = 0.2)
+  m2 <- match.partition(Sex, discard = 0.2)
 
   expect_is(m2, "names.pairs")
   expect_is(m2, "names.split")
@@ -197,7 +208,7 @@ test_that("Matchings have the correct classes", {
   expect_is(as.data.frame(m2), "data.frame")
 
 
-  m3 <- match.pairs(Sex, discard = 0.2, subset=s)
+  m3 <- match.partition(Sex, discard = 0.2, subset=s)
 
   expect_is(m3, "names.pairs")
   expect_is(m3, "names.split")
@@ -207,7 +218,7 @@ test_that("Matchings have the correct classes", {
   expect_is(as.data.frame(m3), "data.frame")
 
 
-  m4 <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+  m4 <- match.partition(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
 
   expect_is(m4, "names.pairs")
   expect_is(m4, "names.split")
@@ -215,6 +226,157 @@ test_that("Matchings have the correct classes", {
   expect_is(m4[2], "names.selection")
   # Conversion to data.frame
   expect_is(as.data.frame(m4), "data.frame")
+
+  #### Pairwise matching based on predefined split
+
+  m5 <- match.split(sp1)
+
+  expect_is(m5, "names.pairs")
+  expect_is(m5, "names.split")
+  expect_is(m5[1], "names.selection")
+  expect_is(m5[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m5), "data.frame")
+
+
+  m6 <- match.split(sp2)
+
+  expect_is(m6, "names.pairs")
+  expect_is(m6, "names.split")
+  expect_is(m6[1], "names.selection")
+  expect_is(m6[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m6), "data.frame")
+
+
+  m7 <- match.split(sp3)
+
+  expect_is(m7, "names.pairs")
+  expect_is(m7, "names.split")
+  expect_is(m7[1], "names.selection")
+  expect_is(m7[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m7), "data.frame")
+
+
+  m8 <- match.split(sp3, Competence=10, Intelligence=10)
+
+  expect_is(m8, "names.pairs")
+  expect_is(m8, "names.split")
+  expect_is(m8[1], "names.selection")
+  expect_is(m8[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m8), "data.frame")
+
+
+  m9 <- match.split(sp4)
+
+  expect_is(m9, "names.pairs")
+  expect_is(m9, "names.split")
+  expect_is(m9[1], "names.selection")
+  expect_is(m9[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m9), "data.frame")
+
+
+  m10 <- match.split(sp5)
+
+  expect_is(m10, "names.pairs")
+  expect_is(m10, "names.split")
+  expect_is(m10[1], "names.selection")
+  expect_is(m10[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m10), "data.frame")
+
+
+  m11 <- match.split(sp6)
+
+  expect_is(m11, "names.pairs")
+  expect_is(m11, "names.split")
+  expect_is(m11[1], "names.selection")
+  expect_is(m11[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m11), "data.frame")
+
+
+  m12 <- match.split(sp7)
+
+  expect_is(m12, "names.pairs")
+  expect_is(m12, "names.split")
+  expect_is(m12[1], "names.selection")
+  expect_is(m12[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m12), "data.frame")
+
+
+  m13 <- match.split(sp8)
+
+  expect_is(m13, "names.pairs")
+  expect_is(m13, "names.split")
+  expect_is(m13[1], "names.selection")
+  expect_is(m13[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m13), "data.frame")
+
+  ##### Pairwise matching based on two separated name sets
+
+  m14 <- match.pairs(sp4[1],sp4[2])
+
+  expect_is(m14, "names.pairs")
+  expect_is(m14, "names.split")
+  expect_is(m14[1], "names.selection")
+  expect_is(m14[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m14), "data.frame")
+
+
+  m15 <- match.pairs(sp5[1],sp5[2])
+
+  expect_is(m15, "names.pairs")
+  expect_is(m15, "names.split")
+  expect_is(m15[1], "names.selection")
+  expect_is(m15[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m15), "data.frame")
+
+
+  m16 <- match.pairs(sp6[1],sp6[2])
+
+  expect_is(m16, "names.pairs")
+  expect_is(m16, "names.split")
+  expect_is(m16[1], "names.selection")
+  expect_is(m16[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m16), "data.frame")
+
+
+  m17 <- match.pairs(sp7[1],sp7[2])
+
+  expect_is(m17, "names.pairs")
+  expect_is(m17, "names.split")
+  expect_is(m17[1], "names.selection")
+  expect_is(m17[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m17), "data.frame")
+
+
+  m18 <- match.pairs(sp8[1],sp8[2])
+
+  expect_is(m18, "names.pairs")
+  expect_is(m18, "names.split")
+  expect_is(m18[1], "names.selection")
+  expect_is(m18[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m18), "data.frame")
+
+  m19 <- match.pairs(sp8[1],sp8[3])
+
+  expect_is(m19, "names.pairs")
+  expect_is(m19, "names.split")
+  expect_is(m19[1], "names.selection")
+  expect_is(m19[2], "names.selection")
+  # Conversion to data.frame
+  expect_is(as.data.frame(m19), "data.frame")
 
   ##### Group matching
 

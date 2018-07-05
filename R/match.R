@@ -25,8 +25,112 @@
 #' other ratings can also be added and emphasized to create sets
 #' of names which are more similar along a special set of ratings.
 #'
-#' @inheritParams partition.names
+#' Note: the split and the matching can be performed in one step
+#' using the method \code{\link{match.partition}}.
+#'
 #' @inheritDotParams names.dist
+#'
+#' @param s The split of the names. Only the first two groups will be used,
+#'          if the split contains more than two groups.
+#'
+#' @importFrom rlang enquo !!
+#' @importFrom clue solve_LSAP
+#'
+#' @examples
+#'
+#' # Create a split based on Sex
+#' s <- partition.names(Sex)
+#'
+#' # Match pairs of male and female names
+#' m <- match.split( s )
+#' m
+#'
+#' # Emphasize on competence and intelligence (weighted 10 times)
+#' m <- match.split(s, Competence=10, Intelligence=10)
+#'
+#'
+#' @export
+match.split <- function(s, ...) {
+  dists <- names.dist( s, ... )
+  if( ncol(dists) < nrow(dists) ){
+    rotated <- T
+    dists <- t( dists )
+  } else {
+    rotated <- F
+  }
+  asgn <- clue::solve_LSAP( dists )
+
+  if(rotated) {
+    res <- make.split( g1 = s[1, as.numeric(asgn) ], g2 = s[ 2 ])
+    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g2[i]),as.character(res$g1[i])])
+  } else {
+    res <- make.split( g1 = s[ 1 ], g2 = s[2, as.numeric(asgn) ])
+    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g1[i]),as.character(res$g2[i])])
+  }
+  ord <- order(res$dist)
+  res$g1 <- res$g1[ord]
+  res$g2 <- res$g2[ord]
+  res$dist <- res$dist[ord]
+
+  class(res) <- c("names.pairs",class( res ))
+  res
+}
+
+#' Match most similar pairs for trial generation in a subset of names
+#'
+#' This function matches pairs of names based on similarity to create
+#' a set of trials. Names are matched, such that each name is only used
+#' once and the sum of the distances over all names in total is minimized.
+#'
+#' Normally the principal components are used for matching names, but
+#' other ratings can also be added and emphasized to create sets
+#' of names which are more similar along a special set of ratings.
+#'
+#' Note: This function takes the two groups of names as separate arguments,
+#  each of which must contain a subset of the total names.
+#'
+#' @inheritDotParams match.split
+#'
+#' @param n1 First subset of the names used in pairing
+#' @param n2 Second subset of the names used in pairing
+#'
+#' @examples
+#'
+#' # Split the names according to intelligence
+#' s <- partition.names(Intelligence)
+#'
+#' # Further split the names randomly
+#' low <- partition.names.random(subset=s[1], prop=c(1,1,1,1))
+#' high <- partition.names.random(subset=s[1], prop=c(1,1,1,1))
+#'
+#' # Create sets with matching high/low intelligence names
+#' low_low <- match.pairs(low[1], low[2])
+#' low_high <- match.pairs(low[3], high[1])
+#' high_low <- match.pairs(high[2], low[4])
+#' high_high <- match.pairs(high[3], high[4])
+#'
+#' @export
+match.pairs <- function(n1, n2, ...) {
+  s <- make.split( n1, n2 )
+  match.split( s )
+}
+
+#' Match most similar pairs for trial generation in a subset of names
+#'
+#' This function matches pairs of names based on similarity to create
+#' a set of trials. Names are matched, such that each name is only used
+#' once and the sum of the distances over all names in total is minimized.
+#'
+#' Normally the principal components are used for matching names, but
+#' other ratings can also be added and emphasized to create sets
+#' of names which are more similar along a special set of ratings.
+#'
+#' Note: This function is a shortcut to create the split using
+#' \code{\link{partition.names}} and match the pairs using
+#' \code{\link{match.split}} in a single step.
+#'
+#' @inheritParams partition.names
+#' @inheritDotParams match.split
 #'
 #' @examples
 #'
@@ -46,40 +150,12 @@
 #' # Emphasize on competence and intelligence (weighted 10 times)
 #' m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
 #' m
-#'
-#' @importFrom rlang enquo !!
-#' @importFrom clue solve_LSAP
-#'
-#' @export
-match.pairs <- function(split, discard=0, subset=filter.names(), ...) {
+match.partition <- function(split, discard=0, subset=filter.names(), ...) {
   split.q <- rlang::enquo( split )
-  groups <- partition.names( !!split.q, discard, subset )
-  dists <- names.dist( groups, ... )
-  if( ncol(dists) < nrow(dists) ){
-    rotated <- T
-    dists <- t( dists )
-  } else {
-    rotated <- F
-  }
-  asgn <- clue::solve_LSAP( dists )
-
-  if(rotated) {
-    res <- list( g1 = groups[1, as.numeric(asgn) ], g2 = groups[ 2 ])
-    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g2[i]),as.character(res$g1[i])])
-  } else {
-    res <- list( g1 = groups[ 1 ], g2 = groups[2, as.numeric(asgn) ])
-    res$dist <- sapply(seq_along(res$g1), function(i) dists[as.character(res$g1[i]),as.character(res$g2[i])])
-  }
-  ord <- order(res$dist)
-  res$g1 <- res$g1[ord]
-  res$g2 <- res$g2[ord]
-  res$dist <- res$dist[ord]
-
-  class(res) <- c("names.pairs","names.split")
-  res
+  s <- partition.names( !!split.q, discard, subset )
+  match.split( s, ...)
 }
 
-#' @export
 as.data.frame.names.pairs <- function(x, ...) {
   data.frame( name1 = as.character(x$g1),
               name2 = as.character(x$g2),

@@ -1,3 +1,4 @@
+* Added methods to pair names from separate subsets (not only median split)
 * Added methods to convert pairs and subsets to data frames
 * Added method to randomly split sets of names
 
