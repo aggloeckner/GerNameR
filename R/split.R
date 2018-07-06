@@ -112,6 +112,8 @@ partition.names <- function(split, discard=0, subset = filter.names()) {
 #' @return An S3 object of class "names.split". The individual
 #'         groups can be retrieved using the operator [].
 #'
+#' @importFrom utils head
+#'
 #' @examples
 #'
 #' # Two random groups of equal sizes from all names

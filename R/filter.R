@@ -139,7 +139,7 @@ as.data.frame.names.selection <- function(x, ...) {
   if( length( ratings ) == 0 ) {
     return( data.frame( name = as.character(x), stringsAsFactors = F ) )
   }
-  data.frame( name = as.character(x), names.ratings(subset=x, ...), row.names = seq_along(x), stringsAsFactors = F )
+  data.frame( name = as.character(x), ratings(subset=x, ...), row.names = seq_along(x), stringsAsFactors = F )
 }
 
 #' @export

@@ -24,10 +24,10 @@
 #' 
 #' s <- filter.names(Intelligence > 0.75)
 #' 
-#' names.ratings(subset=s, Intelligence, Competence)
+#' ratings(subset=s, Intelligence, Competence)
 #' 
 #' @export
-names.ratings <- function(..., subset = filter.names()) {
+ratings <- function(..., subset = filter.names()) {
   qs <- rlang::ensyms( ... )
   if(length(qs) == 0) {
     return( numeric() )

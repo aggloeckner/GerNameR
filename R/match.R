@@ -135,21 +135,23 @@ match.pairs <- function(n1, n2, ...) {
 #' @examples
 #'
 #' # Just match names split on Sex rating
-#' m <- match.pairs(Sex)
+#' m <- match.partition(Sex)
 #' m
 #'
 #' # Match names, but discard some which are ambigous in terms of Sex
-#' m <- match.pairs(Sex, discard = 0.2)
+#' m <- match.partition(Sex, discard = 0.2)
 #' m
 #'
 #' # First filter unfamiliar and foreign names
 #' s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
-#' m <- match.pairs(Sex, discard = 0.2, subset=s)
+#' m <- match.partition(Sex, discard = 0.2, subset=s)
 #' m
 #'
 #' # Emphasize on competence and intelligence (weighted 10 times)
-#' m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+#' m <- match.partition(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
 #' m
+#' 
+#' @export
 match.partition <- function(split, discard=0, subset=filter.names(), ...) {
   split.q <- rlang::enquo( split )
   s <- partition.names( !!split.q, discard, subset )
@@ -165,7 +167,7 @@ as.data.frame.names.pairs <- function(x, ...) {
                       row.names = seq_along(x$g1), stringsAsFactors = F)
     return( rv )
   }
-  r <- data.frame( names.ratings(subset=x$g1, ...), names.ratings(subset=x$g2, ...) )
+  r <- data.frame( ratings(subset=x$g1, ...), ratings(subset=x$g2, ...) )
   lbls <- unlist( lapply(qs, as.character) )
   colnames(r) <- c(paste("name1", lbls, sep="."), paste("name2", lbls, sep="."))
   data.frame( name1 = as.character(x$g1),

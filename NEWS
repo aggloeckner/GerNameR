@@ -1,3 +1,6 @@
+GerNameR v0.2.0 (Release date: 2018-07-06)
+==============
+
 * Added methods to retrieve ratings for names
 * Added methods to pair names from separate subsets (not only median split)
 * Added methods to convert pairs and subsets to data frames
