@@ -165,7 +165,7 @@ as.data.frame.names.pairs <- function(x, ...) {
                       row.names = seq_along(x$g1), stringsAsFactors = F)
     return( rv )
   }
-  r <- data.frame( names.ratings(subset=x$g1, ...), names.ratings(subset=x$g2, ...) )
+  r <- data.frame( ratings(subset=x$g1, ...), ratings(subset=x$g2, ...) )
   lbls <- unlist( lapply(qs, as.character) )
   colnames(r) <- c(paste("name1", lbls, sep="."), paste("name2", lbls, sep="."))
   data.frame( name1 = as.character(x$g1),
