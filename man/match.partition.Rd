@@ -41,19 +41,20 @@ Note: This function is a shortcut to create the split using
 \examples{
 
 # Just match names split on Sex rating
-m <- match.pairs(Sex)
+m <- match.partition(Sex)
 m
 
 # Match names, but discard some which are ambigous in terms of Sex
-m <- match.pairs(Sex, discard = 0.2)
+m <- match.partition(Sex, discard = 0.2)
 m
 
 # First filter unfamiliar and foreign names
 s <- filter.names(Familiarity >= 0.5, Nationality >= 0.5)
-m <- match.pairs(Sex, discard = 0.2, subset=s)
+m <- match.partition(Sex, discard = 0.2, subset=s)
 m
 
 # Emphasize on competence and intelligence (weighted 10 times)
-m <- match.pairs(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
+m <- match.partition(Sex, discard = 0.2, subset=s, Competence=10, Intelligence=10)
 m
+
 }
