@@ -15,6 +15,12 @@
 #
 ###############################################################################
 
+make.split <- function(...) {
+  rv <- list( ... )
+  class(rv) <- "names.split"
+  rv
+}
+
 #' Split a set of names into two subsets based on a rating
 #'
 #' Creates a median split based on a given rating. In addition a
@@ -85,9 +91,58 @@ partition.names <- function(split, discard=0, subset = filter.names()) {
   g1 <- filter.names( !!split.q < trgt.low )
   g2 <- filter.names( !!split.q > trgt.high )
 
-  rv <- list(g1 = g1 & subset, g2 = g2 & subset)
-  class(rv) <- "names.split"
-  rv
+  make.split(low = g1 & subset, high = g2 & subset)
+}
+
+#' Split a set of names into random subsets
+#'
+#' Creates a random split of a subset or all naes. Names can be split
+#' into subsets of different size based on the proportion of the names
+#' in each subset after the split.
+#'
+#' @param subset      An optional subset on which the split should be
+#'                    done. If this is left out, the split will
+#'                    be created on all names.
+#'
+#' @param prop        Proportion of the names in each subset (defaults to two groups
+#'                    of equal size). Proportions are given as a vector with the
+#'                    proportion in each group. Proportions are automatically
+#'                    normalized.
+#'
+#' @return An S3 object of class "names.split". The individual
+#'         groups can be retrieved using the operator [].
+#'
+#' @importFrom utils head
+#'
+#' @examples
+#'
+#' # Two random groups of equal sizes from all names
+#' s <- partition.names.random()
+#'
+#' # Three groups of different proportions (first group twice as large)
+#' s <- partition.names.random( prop = c(2,1,1) )
+#'
+#' # First filter on Competence, then split randomly
+#' n <- filter.names(Competence >= 0.5)
+#' s <- partition.names.random(subset=n)
+#'
+#' @export
+partition.names.random <- function(subset = filter.names(), prop = c(0.5,0.5)) {
+  idx <- as.numeric( subset )
+  idx <- sample(idx)
+
+  c <- seq_along( idx )
+
+  # Normalize proportions
+  prop <- (prop / sum(prop)) * length(idx)
+
+  # upper and lower index for each group
+  upper <- ceiling( cumsum( prop ) )
+  lower <- c(0, head( upper, -1) )
+
+  msks <- lapply(seq_along(upper), function(i) (lower[i] < c) & (c <= upper[i]))
+  rv <- lapply(msks, function(msk) make.names.selection( sort( idx[msk] ) ) )
+  do.call(make.split, rv)
 }
 
 #' @export

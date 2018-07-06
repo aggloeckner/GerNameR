@@ -28,6 +28,12 @@
 # looses duplicates, as there is no easy way to keep this information).
 
 
+make.names.selection <- function(v) {
+  rv <- v
+  class(rv) <- c("names.selection", class(rv))
+  rv
+}
+
 #' Filter a subset from the names based on percentiles
 #'
 #' This method filters a set of names from the complete
@@ -70,48 +76,55 @@ filter.names <- function(...) {
     rv <- apply(msks, MARGIN=1, all)
   }
 
-  class(rv) <- c("names.selection", class(rv))
-  rv
+  make.names.selection( rv )
 }
 
-#' @S3method as.logical names.selection
-as.logical.names.selection <- function(x, ...) {
-  UseMethod("as.logical.names.selection")
+# Private method for polymorphic lookup depending on representation
+names.selection.to.logical <- function(x, ...) {
+  UseMethod("names.selection.to.logical")
 }
 
-#' @S3method as.logical.names.selection logical
-as.logical.names.selection.logical <- function(x, ...) {
+names.selection.to.logical.logical <- function(x, ...) {
   # just strip off class type
   rv <- x
   class(rv) <- "logical"
   rv
 }
 
-#' @S3method as.logical.names.selection numeric
-as.logical.names.selection.numeric <- function(x, ...) {
+names.selection.to.logical.numeric <- function(x, ...) {
   rv <- rep(F, nrow(names.mean.pc))
   rv[x] <- T
   rv
 }
 
-#' @S3method as.double names.selection
-as.double.names.selection <- function(x, ...) {
-  UseMethod("as.double.names.selection")
+#' @export
+as.logical.names.selection <- function(x, ...) {
+  names.selection.to.logical(x, ...)
 }
 
-#' @S3method as.double.names.selection logical
-as.double.names.selection.logical <- function(x, ...) {
+# Private method for polymorphic lookup depending on representation
+names.selection.to.double <- function(x, ...) {
+  UseMethod("names.selection.to.double")
+}
+
+names.selection.to.double.logical <- function(x, ...) {
   rv <- as.double( which( x ) )
   rv
 }
 
-#' @S3method as.double.names.selection numeric
-as.double.names.selection.numeric <- function(x, ...) {
+names.selection.to.double.numeric <- function(x, ...) {
   # Just strip of class type
   rv <- x
   class(rv) <- "numeric"
   rv
 }
+
+#' @export
+as.double.names.selection <- function(x, ...) {
+  names.selection.to.double(x, ...)
+}
+
+
 
 #' @export
 as.character.names.selection <- function(x, ...) {
@@ -121,8 +134,17 @@ as.character.names.selection <- function(x, ...) {
 }
 
 #' @export
+as.data.frame.names.selection <- function(x, ...) {
+  ratings <- rlang::ensyms( ... )
+  if( length( ratings ) == 0 ) {
+    return( data.frame( name = as.character(x), stringsAsFactors = F ) )
+  }
+  data.frame( name = as.character(x), ratings(subset=x, ...), row.names = seq_along(x), stringsAsFactors = F )
+}
+
+#' @export
 print.names.selection <- function(x, ... ) {
-  print( as.character( x ) )
+  print( as.data.frame( x, ...) )
 }
 
 #' @export
@@ -150,17 +172,21 @@ print.names.selection <- function(x, ... ) {
   rv
 }
 
-#' @S3method length names.selection
-length.names.selection <- function(x) {
-  UseMethod("length.names.selection")
+# Private helper method to use polymorphism on the internal representation
+the.length <- function(x) {
+  UseMethod("the.length")
 }
 
-#' @S3method length.names.selection logical
-length.names.selection.logical <- function(x) {
+the.length.logical <- function(x) {
   sum(x)
 }
 
-#' @S3method length.names.selection numeric
-length.names.selection.numeric <- function(x) {
+
+the.length.numeric <- function(x) {
   length( as.numeric( x ) )
+}
+
+#' @export
+length.names.selection <- function(x) {
+  the.length(x)
 }
