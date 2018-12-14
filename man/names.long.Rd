@@ -5,7 +5,7 @@
 \name{names.long}
 \alias{names.long}
 \title{Validated ratings for German names (long version)}
-\format{A data frame with 39017 rows and 49 variables:}
+\format{A data frame with 55955 rows and 50 variables:}
 \source{
 \url{https://osf.io/jepzp/}
 }

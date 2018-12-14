@@ -5,7 +5,7 @@
 \name{names.mean}
 \alias{names.mean}
 \title{Validated ratings for German names (averaged version)}
-\format{A data frame with 2000 rows and 47 variables:}
+\format{A data frame with 2000 rows and 50 variables:}
 \source{
 \url{https://osf.io/jepzp/}
 }
